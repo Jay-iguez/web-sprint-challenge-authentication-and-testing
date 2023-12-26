@@ -31,7 +31,7 @@ describe('Server testing', () => {
       let input_data = { username: '', password: '' }
       let res = await request(server).post(input_url).send(input_data)
       expect(res.body.message).toBe(expected)
-      expect(res.status).toBe(400)
+      expect(res.status).toBe(422)
     })
     test('[POST] /login logins in user on valid payload', async () => {
       let expected = { message: `welcome, Arcticive`, token: 'some_token' }
