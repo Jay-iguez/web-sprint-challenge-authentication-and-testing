@@ -1,18 +1,18 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs')
 const Auth_model = require('./auth_model')
-const { check_user_already_exists, check_body_payload} = require('../middleware/auth_middleware')
+const { check_user_already_exists, check_body_payload, handle_login } = require('../middleware/auth_middleware')
 
 router.post('/register', [check_body_payload, check_user_already_exists], async (req, res, next) => {
   try {
     const { username, password } = req.body
     const hash = bcrypt.hashSync(password, 8)
-    const payload = {username: username, password: hash}
-   
+    const payload = { username: username, password: hash }
+
     const [new_user] = await Auth_model.register(payload)
     res.status(201).json(new_user)
-  } catch(err) {
-    next({status: 500, message: "Error in registering new user: " + err.message})
+  } catch (err) {
+    next({ status: 500, message: "Error in registering new user: " + err.message })
   }
   /*
 
@@ -43,10 +43,16 @@ router.post('/register', [check_body_payload, check_user_already_exists], async 
   */
 });
 
-router.post('/login', async (req, res) => {
-   res.end('implement login, please!');
+router.post('/login', [check_body_payload, handle_login], async (req, res, next) => {
+  try {
+    const { username } = req.body
+    const logged_in = await Auth_model.login(username)
+    res.status(200).json(logged_in)
+  } catch (err) {
+    next({ status: 500, message: "Error in logging in: " + err.message })
+  }
   /*
-
+ res.end('implement login, please!');
    
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
