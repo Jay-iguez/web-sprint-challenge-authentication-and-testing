@@ -1,8 +1,22 @@
 const router = require('express').Router();
+const bcrypt = require('bcryptjs')
+const Auth_model = require('./auth_model')
+const {SECRET} = require('../../data/utils')
 
-router.post('/register', (req, res) => {
-  res.end('implement register, please!');
+router.post('/register', async (req, res, next) => {
+  try {
+    const { username, password } = req.body
+    const hash = bcrypt.hashSync(password, 8)
+    const payload = {username: username, password: hash}
+   
+    const [new_user] = await Auth_model.register(payload)
+    res.status(201).json(new_user)
+  } catch(err) {
+    next({status: 500, message: "Error in registering new user: " + err.message})
+  }
   /*
+
+    res.end('implement register, please!');
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
     DO NOT EXCEED 2^8 ROUNDS OF HASHING!
@@ -29,9 +43,11 @@ router.post('/register', (req, res) => {
   */
 });
 
-router.post('/login', (req, res) => {
-  res.end('implement login, please!');
+router.post('/login', async (req, res) => {
+   res.end('implement login, please!');
   /*
+
+   
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
 
